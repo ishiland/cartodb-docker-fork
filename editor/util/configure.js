@@ -97,10 +97,10 @@ function mergeYMLFiles(inputFiles, outputFile) {
 
 function loadObjectFromYMLFile(filename) {
   const content = fs.readFileSync(filename, 'utf8');
-  return yaml.safeLoad(content, { json: true });
+  return yaml.load(content, { json: true });
 }
 
 function writeObjectToYMLFile(object, filename) {
-  const ymlString = yaml.safeDump(object);
+  const ymlString = yaml.dump(object);
   fs.writeFileSync(filename, ymlString);
 }
