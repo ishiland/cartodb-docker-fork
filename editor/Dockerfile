@@ -61,8 +61,8 @@ RUN apt-get update \
     libpixman-1-dev \
     nodejs \
     # Ruby
-    ruby2.2 \
-    ruby2.2-dev \
+    ruby2.3 \
+    ruby2.3-dev \
     ruby-bundler \
     libreadline6-dev \
     openssl \
@@ -78,7 +78,7 @@ RUN apt-get update \
     unzip \
     wget \
   # Install Pip.
-  && wget -O /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py \
+  && wget -O /tmp/get-pip.py https://bootstrap.pypa.io/pip/2.7/get-pip.py \
   && python /tmp/get-pip.py \
   # Clean up.
   && rm /tmp/get-pip.py \
