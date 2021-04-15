@@ -50,7 +50,7 @@ ENV DATASERVICESAPI_VERSION=python-0.20.2
 # https://github.com/CartoDB/observatory-extension
 ENV OBSERVATORY_VERSION=1.9.0
 
-RUN curl https://bootstrap.pypa.io/get-pip.py | python \
+RUN curl https://bootstrap.pypa.io/pip/2.7/get-pip.py  | python \
   # CartoDB main postgresql extensions
   && git clone \
     --branch ${CARTODB_POSTGRESQL_VERSION} \
