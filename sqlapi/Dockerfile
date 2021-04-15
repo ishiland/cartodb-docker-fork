@@ -1,19 +1,26 @@
-FROM buildpack-deps:16.04
+FROM ubuntu:18.04
 
-RUN curl -sL https://deb.nodesource.com/setup_9.x | bash - \
-  && apt-get update \
-  && apt-get -y --no-install-recommends install \
-    nodejs \
-  && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y -q \
+    curl \
+    git-core \
+    git
+
+RUN curl -sL https://deb.nodesource.com/setup_10.x -o nodesource_setup.sh &&  \
+    bash nodesource_setup.sh && \
+    apt install -y -q nodejs
+
+RUN  npm install -g grunt-cli && \
+  npm install -g npm@6
+
 
 # CartoDB/CartoDB-SQL-API version
-ENV CARTODB_SQL_API_VERSION=2.2.1
+ENV CARTODB_SQL_API_VERSION=master
 
-RUN mkdir /CartoDB-SQL-API \
-  && curl -L https://github.com/CartoDB/CartoDB-SQL-API/archive/${CARTODB_SQL_API_VERSION}.tar.gz \
-    | tar -zx --strip-components=1 -C CartoDB-SQL-API \
-  && cd /CartoDB-SQL-API \
-  && npm install
+RUN git clone git://github.com/CartoDB/CartoDB-SQL-API.git && \
+    cd CartoDB-SQL-API && \
+    git checkout $SQLAPI_VERSION && \
+    npm install && \
+    mkdir logs
 
 # Copy resources.
 COPY config/*.js /CartoDB-SQL-API/config/environments/
@@ -33,4 +40,4 @@ ENTRYPOINT [ "docker-entrypoint.sh", "base.config.js" ]
 # - test.js.example
 # OR extend this image by COPYing a custom config file into /CartoDB-SQL-API/config/environments/
 # and passing its name as the CMD.
-CMD [ "development.js.example" ]
+CMD [ "production.js.example" ]
