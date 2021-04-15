@@ -1,30 +1,29 @@
-FROM buildpack-deps:16.04
+FROM ubuntu:18.04
 
-RUN curl -sL https://deb.nodesource.com/setup_9.x | bash - \
-  && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
-  && echo "deb http://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
-  && apt-get update \
-  && apt-get -y --no-install-recommends install \
+RUN apt-get update \
+  && apt-get -y -q install \
     build-essential \
     git \
+    curl \
     libcairo2-dev \
     libgif-dev \
     libjpeg-dev \
     libpango1.0-dev \
-    nodejs \
-    yarn=0.27.5-1 \
-  && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl -sL https://deb.nodesource.com/setup_12.x -o nodesource_setup.sh &&  \
+    bash nodesource_setup.sh && \
+    apt install -y -q nodejs
 
 # CartoDB/Windshaft-cartodb version
-ENV WINDSHAFT_CARTODB_VERSION=6.4.0
+ENV WINDSHAFT_CARTODB_VERSION=master
 
 # Install the application.
-RUN mkdir /Windshaft-cartodb \
-  && curl -L https://github.com/CartoDB/Windshaft-cartodb/archive/${WINDSHAFT_CARTODB_VERSION}.tar.gz \
-    | tar -zx --strip-components=1 -C Windshaft-cartodb \
-  && cd /Windshaft-cartodb \
-  && yarn \
-  && mkdir /Windshaft-cartodb/logs
+RUN git clone git://github.com/CartoDB/Windshaft-cartodb.git && \
+    cd Windshaft-cartodb && \
+    git checkout $WINDSHAFT_VERSION && \
+    npm install && \
+    mkdir logs
 
 # Copy resources.
 COPY config/*.js /Windshaft-cartodb/config/environments/
@@ -44,4 +43,4 @@ ENTRYPOINT [ "docker-entrypoint.sh", "base.config.js" ]
 # - test.js.example
 # OR extend this image by COPYing a custom config file into /Windshaft-cartodb/config/environments/
 # and passing its name as the CMD.
-CMD [ "development.js.example" ]
+CMD [ "production.js.example" ]
